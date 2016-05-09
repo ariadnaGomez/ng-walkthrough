@@ -340,25 +340,20 @@ angular.module('ng-walkthrough', [])
 
 				var setVerticalArrowAndText = function(pointSubjectLeft, pointSubjectTop, pointSubjectWidth, pointSubjectHeight, paddingLeft){
                     var offsetCoordinates = getOffsetCoordinates(scope.walkthroughTextElement);
-                    var startLeft = offsetCoordinates.left + offsetCoordinates.width /2;
+                    var left = offsetCoordinates.left + offsetCoordinates.width /2;
                     var startTop = offsetCoordinates.top + PADDING_ARROW_START;
+
+					var endTop = 0;
 
                     if (scope.forceCaptionLocation === "TOP"){
                         startTop += offsetCoordinates.height;
-                    }
-                    var endTop = 0;
-                    var endLeft = 0;
-
-                    if (startLeft > pointSubjectLeft){//If hole left to text set arrow to point to middle right
-                        endLeft = pointSubjectLeft + paddingLeft + pointSubjectWidth;
-                        endTop = pointSubjectTop - 30;
-                    } else if (startLeft < pointSubjectLeft){//If hole right to text set arrow to point to middle left
-                        endLeft = pointSubjectLeft - paddingLeft;
-                        endTop = pointSubjectTop + (pointSubjectHeight/2);
-                    }
+						endTop = pointSubjectTop - 30;
+                    } else {
+						endTop = pointSubjectTop + pointSubjectHeight + 30;
+					}
 
                     //Check if text overlaps icon or user explicitly wants text at bottom, if does, move it to bottom
-                    if (isItemOnText(startLeft, startTop, endLeft, endTop)){
+                    if (isItemOnText(left, startTop, left, endTop)){
                         moveTextToBottom(startTop);
                     }
 
@@ -369,7 +364,7 @@ angular.module('ng-walkthrough', [])
                         '<path d="M2,8 L2,10 L10,6 L2,2" style="fill:#fff;" />' +
                         '</marker>' +
                         '</defs>' +
-                        '<path d="M' + startLeft + ' ' + startTop + '  L' + startLeft + ' ' + endTop + '"' +
+                        '<path d="M' + left + ' ' + startTop + '  L' + left + ' ' + endTop + '"' +
                         'style="stroke:#fff; stroke-width: 2px; fill: none;' +
                         'marker-end: url(#arrow);"/>' +
                         '/>' +
