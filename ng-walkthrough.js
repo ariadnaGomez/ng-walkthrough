@@ -29,7 +29,7 @@ angular.module('ng-walkthrough', [])
                                 '</pre>',
                             '</div>',
                             '<img class="walkthrough-element walkthrough-icon" ng-show="icon && icon!=\'arrow\'" ng-src="{{walkthroughIcon}}">',
-                            '<div class="walkthrough-element walkthrough-arrow" ng-show="icon==\'arrow\'"></div>',
+                            '<div class="walkthrough-element walkthrough-arrow" ng-show="icon==\'arrow\'||icon==\'arrow_vertical\'"></div>',
                             '<button class="walkthrough-element walkthrough-button-positive walkthrough-done-button" type="button" ng-if="useButton" ng-click="onCloseClicked($event)" on-touch="onCloseTouched($event)">',
                                 '{{buttonCaption}}',
                             '</button>',
@@ -104,6 +104,9 @@ angular.module('ng-walkthrough', [])
                                 retval = ngWalkthroughTapIcons.swipe_up;
                                 break;
                             case ("arrow"):
+                                retval = ""; //Return nothing, using other dom element for arrow
+                                break;
+							case ("arrow_vertical"):
                                 retval = ""; //Return nothing, using other dom element for arrow
                                 break;
                         }
@@ -295,7 +298,7 @@ angular.module('ng-walkthrough', [])
                 };
 
                 var setArrowAndText = function(pointSubjectLeft, pointSubjectTop, pointSubjectWidth, pointSubjectHeight, paddingLeft){
-                    var offsetCoordinates = getOffsetCoordinates(scope.walkthroughTextElement);
+					var offsetCoordinates = getOffsetCoordinates(scope.walkthroughTextElement);
                     var startLeft = offsetCoordinates.left + offsetCoordinates.width /2;
                     var startTop = offsetCoordinates.top + PADDING_ARROW_START;
 
@@ -326,6 +329,47 @@ angular.module('ng-walkthrough', [])
                         '</marker>' +
                         '</defs>' +
                         '<path d="M' + startLeft + ',' + startTop + ' Q' + startLeft + ',' + endTop + ' ' + endLeft + ',' + endTop + '"' +
+                        'style="stroke:#fff; stroke-width: 2px; fill: none;' +
+                        'marker-end: url(#arrow);"/>' +
+                        '/>' +
+                        '</svg>';
+
+
+                    scope.walkthroughArrowElement.append(arrowSvgDom);
+				};
+
+				var setVerticalArrowAndText = function(pointSubjectLeft, pointSubjectTop, pointSubjectWidth, pointSubjectHeight, paddingLeft){
+                    var offsetCoordinates = getOffsetCoordinates(scope.walkthroughTextElement);
+                    var startLeft = offsetCoordinates.left + offsetCoordinates.width /2;
+                    var startTop = offsetCoordinates.top + PADDING_ARROW_START;
+
+                    if (scope.forceCaptionLocation === "TOP"){
+                        startTop += offsetCoordinates.height;
+                    }
+                    var endTop = 0;
+                    var endLeft = 0;
+
+                    if (startLeft > pointSubjectLeft){//If hole left to text set arrow to point to middle right
+                        endLeft = pointSubjectLeft + paddingLeft + pointSubjectWidth;
+                        endTop = pointSubjectTop - 30;
+                    } else if (startLeft < pointSubjectLeft){//If hole right to text set arrow to point to middle left
+                        endLeft = pointSubjectLeft - paddingLeft;
+                        endTop = pointSubjectTop + (pointSubjectHeight/2);
+                    }
+
+                    //Check if text overlaps icon or user explicitly wants text at bottom, if does, move it to bottom
+                    if (isItemOnText(startLeft, startTop, endLeft, endTop)){
+                        moveTextToBottom(startTop);
+                    }
+
+                    var arrowSvgDom =
+                        '<svg width="100%" height="100%">' +
+                        '<defs>' +
+                        '<marker id="arrow" markerWidth="13" markerHeight="13" refx="2" refy="6" orient="auto">' +
+                        '<path d="M2,8 L2,10 L10,6 L2,2" style="fill:#fff;" />' +
+                        '</marker>' +
+                        '</defs>' +
+                        '<path d="M' + startLeft + ' ' + startTop + '  L' + startLeft + ' ' + endTop + '"' +
                         'style="stroke:#fff; stroke-width: 2px; fill: none;' +
                         'marker-end: url(#arrow);"/>' +
                         '/>' +
@@ -420,7 +464,7 @@ angular.module('ng-walkthrough', [])
                         if (!paddingTop) { paddingTop = 0;}
 
                         //If Gesture icon given bind it to hole as well
-                        if (walkthroughIconWanted && walkthroughIconWanted !== "arrow" && scope.walkthroughType === "transparency"){
+                        if (walkthroughIconWanted && walkthroughIconWanted !== "arrow" && walkthroughIconWanted !== "arrow_vertical" && scope.walkthroughType === "transparency"){
                             scope.$applyAsync(function () {
                                 setIconAndText(left + width/2, top  + height/2, paddingLeft, paddingTop);
                             });
@@ -429,6 +473,12 @@ angular.module('ng-walkthrough', [])
                             //Need to update text location according to conditional class added 'walkthrough-transparency-bottom'
                             scope.$applyAsync(function () {
                                 setArrowAndText(left, top + paddingTop, width, height, paddingLeft);
+                            });
+                        }
+						if (walkthroughIconWanted == "arrow_vertical"){
+                            //Need to update text location according to conditional class added 'walkthrough-transparency-bottom'
+                            scope.$applyAsync(function () {
+                                setVerticalArrowAndText(left, top + paddingTop, width, height, paddingLeft);
                             });
                         }
                         //if tip mode with icon that we want to set padding to, set it
