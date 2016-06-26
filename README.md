@@ -136,6 +136,7 @@ and use one of the two configurations:
 - `is-bind-click-event-to-body` (optional) - Any walkthrough type. If 'use-botton' is not set to true, then any this will bind the click events to the body to capture events outside walkthrough, for example: ionic header
 - `on-walkthrough-show` (optional) - Any walkthrough type. Bind method to be called when walkthrough is displayed
 - `on-walkthrough-hide` (optional) - Any walkthrough type. Bind method to be called when walkthrough is hidden
+- `header-bar` (optional) - If defined it will look for element to focus in the nav bar
 
 ## Testing
 

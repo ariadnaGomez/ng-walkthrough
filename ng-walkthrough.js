@@ -78,7 +78,8 @@ angular.module('ng-walkthrough', [])
                 tipColor: '@',
                 isBindClickEventToBody: '=',
                 onWalkthroughShow: '&',
-                onWalkthroughHide: '&'
+                onWalkthroughHide: '&',
+				headerBar: '='
             },
             link: function (scope, element, attrs, ctrl, $transclude) {
                 var getIcon = function(icon){
@@ -443,8 +444,8 @@ angular.module('ng-walkthrough', [])
 
                 //Attempts to highlight the given element ID and set Icon to it if exists, if not use default - right under text
                 var setElementLocations = function(walkthroughIconWanted, focusElementId, iconPaddingLeft, iconPaddingTop){
-                    var focusElement = (focusElementId)?document.querySelector('#' + focusElementId): null;
-                    var angularElement = (focusElement)?angular.element(focusElement):null;
+                    var focusElement = getElement(focusElementId);
+                    var angularElement = focusElement ? angular.element(focusElement) : null;
                     if (angularElement && angularElement.length > 0) {
                         var offsetCoordinates = getOffsetCoordinates(angularElement);
                         var width = offsetCoordinates.width;
@@ -495,6 +496,30 @@ angular.module('ng-walkthrough', [])
                         }
                     }
                 };
+
+				function getElement(focusElementId) {
+
+					if (scope.headerBar && hasIonic) {
+						var headerBars = document.getElementsByTagName('ion-header-bar');
+						var i = 0;
+						var final = [];
+						for (i = 0; i< headerBars.length; i++) {
+							if (headerBars[i].parentNode.getAttribute('nav-bar') === 'active') {
+								final.push(headerBars[i]);
+							}
+						}
+						headerBars = final;
+						final = [];
+						for (i = 0; i< headerBars.length; i++) {
+							var el = headerBars[i].querySelector('#' + focusElementId);
+							if (el !== null) {
+								final.push(headerBars[i]);
+							}
+						}
+						return final[0].querySelector('#' + focusElementId);
+					}
+					return focusElementId?document.querySelector('#' + focusElementId): null;
+				}
 
                 scope.setFocusOnElement = function(focusElementId){
                     setElementLocations(scope.icon, focusElementId, scope.iconPaddingLeft, scope.iconPaddingTop);
