@@ -79,7 +79,8 @@ angular.module('ng-walkthrough', [])
                 isBindClickEventToBody: '=',
                 onWalkthroughShow: '&',
                 onWalkthroughHide: '&',
-				headerBar: '='
+				headerBar: '=',
+				footerBar: '='
             },
             link: function (scope, element, attrs, ctrl, $transclude) {
                 var getIcon = function(icon){
@@ -517,6 +518,10 @@ angular.module('ng-walkthrough', [])
 							}
 						}
 						return final[0].querySelector('#' + focusElementId);
+					}
+					if (scope.footerBar && hasIonic) {
+						var footerBars = document.getElementsByTagName('ion-footer-bar');
+						return footerBars[0].querySelector('#' + focusElementId);
 					}
 					return focusElementId?document.querySelector('#' + focusElementId): null;
 				}

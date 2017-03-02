@@ -137,6 +137,7 @@ and use one of the two configurations:
 - `on-walkthrough-show` (optional) - Any walkthrough type. Bind method to be called when walkthrough is displayed
 - `on-walkthrough-hide` (optional) - Any walkthrough type. Bind method to be called when walkthrough is hidden
 - `header-bar` (optional) - If defined it will look for element to focus in the nav bar
+- `footer-bar` (optional) - If defined it will look for element to focus in the footer
 
 ## Testing
 
