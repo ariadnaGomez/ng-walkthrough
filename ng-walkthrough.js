@@ -24,7 +24,7 @@ angular.module('ng-walkthrough', [])
                     '<div class="walkthrough-inner" ng-class="{\'walkthrough-top\': (!forceCaptionLocation || forceCaptionLocation==\'TOP\'), \'walkthrough-bottom\': forceCaptionLocation==\'BOTTOM\'}">',
                         '<div class="walkthrough-transclude" ng-transclude></div>',
                         '<div class="walkthrough-non-transclude-template" ng-show="!hasTransclude">',
-                            '<div class="walkthrough-text-container">',
+                            '<div ng-style="textStylePosition" class="walkthrough-text-container">',
                                 '<pre class="walkthrough-element walkthrough-text" ng-bind="mainCaption">',
                                 '</pre>',
                             '</div>',
@@ -80,7 +80,8 @@ angular.module('ng-walkthrough', [])
                 onWalkthroughShow: '&',
                 onWalkthroughHide: '&',
 				headerBar: '=',
-				footerBar: '='
+				footerBar: '=',
+				textPosition: '=?'
             },
             link: function (scope, element, attrs, ctrl, $transclude) {
                 var getIcon = function(icon){
@@ -202,6 +203,10 @@ angular.module('ng-walkthrough', [])
                         ngWalkthroughTapIcons = null;
                     }
 
+					if (angular.isDefined(scope.textPosition)) {
+						scope.textStylePosition = {top: scope.textPosition + 'px', bottom: 'auto'};
+					}
+
                     scope.clickEvent = 'click';
                     //noinspection JSUnresolvedVariable
                     if (hasIonic) { //Might need to comment this out if fails build on angular only machine
@@ -239,6 +244,7 @@ angular.module('ng-walkthrough', [])
                     },100);
                     scope.walkthroughIcon = getIcon(scope.icon);
                     scope.buttonCaption = BUTTON_CAPTION_DONE;
+
                 };
 
                 //Sets the walkthrough focus hole on given params with padding
